@@ -72,7 +72,7 @@
             this.LinePanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.LinePanel.Location = new System.Drawing.Point(0, 103);
             this.LinePanel.Name = "LinePanel";
-            this.LinePanel.Size = new System.Drawing.Size(1262, 11);
+            this.LinePanel.Size = new System.Drawing.Size(1262, 10);
             this.LinePanel.TabIndex = 2;
             // 
             // filterPanel
@@ -86,7 +86,7 @@
             this.filterPanel.Controls.Add(this.fromDatePicker);
             this.filterPanel.Controls.Add(this.label1);
             this.filterPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.filterPanel.Location = new System.Drawing.Point(0, 114);
+            this.filterPanel.Location = new System.Drawing.Point(0, 113);
             this.filterPanel.Name = "filterPanel";
             this.filterPanel.Size = new System.Drawing.Size(1262, 68);
             this.filterPanel.TabIndex = 3;
@@ -111,6 +111,7 @@
             this.btnPrint.TabIndex = 5;
             this.btnPrint.Text = "Print";
             this.btnPrint.UseVisualStyleBackColor = true;
+            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
             // 
             // btnSubmit
             // 
@@ -126,16 +127,17 @@
             // toDatePicker
             // 
             this.toDatePicker.CalendarFont = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toDatePicker.Location = new System.Drawing.Point(506, 30);
+            this.toDatePicker.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.toDatePicker.Location = new System.Drawing.Point(506, 24);
             this.toDatePicker.Name = "toDatePicker";
-            this.toDatePicker.Size = new System.Drawing.Size(200, 22);
+            this.toDatePicker.Size = new System.Drawing.Size(200, 30);
             this.toDatePicker.TabIndex = 3;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(398, 30);
+            this.label2.Location = new System.Drawing.Point(398, 28);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(102, 22);
             this.label2.TabIndex = 2;
@@ -144,16 +146,17 @@
             // fromDatePicker
             // 
             this.fromDatePicker.CalendarFont = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fromDatePicker.Location = new System.Drawing.Point(172, 29);
+            this.fromDatePicker.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fromDatePicker.Location = new System.Drawing.Point(172, 24);
             this.fromDatePicker.Name = "fromDatePicker";
-            this.fromDatePicker.Size = new System.Drawing.Size(200, 22);
+            this.fromDatePicker.Size = new System.Drawing.Size(200, 30);
             this.fromDatePicker.TabIndex = 1;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(35, 29);
+            this.label1.Location = new System.Drawing.Point(35, 28);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(131, 22);
             this.label1.TabIndex = 0;
@@ -167,11 +170,11 @@
             this.dataGridView1.AllowUserToResizeRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 182);
+            this.dataGridView1.Location = new System.Drawing.Point(0, 181);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(1262, 538);
+            this.dataGridView1.Size = new System.Drawing.Size(1262, 540);
             this.dataGridView1.TabIndex = 4;
             // 
             // AccountsForm
@@ -187,6 +190,7 @@
             this.Name = "AccountsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "AccountsForm";
+            this.Load += new System.EventHandler(this.AccountsForm_Load);
             this.HeadPanel.ResumeLayout(false);
             this.HeadPanel.PerformLayout();
             this.filterPanel.ResumeLayout(false);

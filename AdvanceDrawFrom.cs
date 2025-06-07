@@ -87,6 +87,32 @@ namespace FinalTask
             dataGridView1.DataSource = table;
             dataGridView1.ClearSelection(); // Clear default selection
 
+            if (_allDrawTimes.Count > 0)
+            {
+                string firstDrawTimeStr = DateTime.Today.Add(_allDrawTimes[0]).ToString("hh:mm tt");
+
+                selectedDrawStrings.Clear(); // clear existing
+                selectedDrawStrings.Add(firstDrawTimeStr); // add only the first draw
+
+                // Refresh DataGridView cell backgrounds
+                foreach (DataGridViewRow row in dataGridView1.Rows)
+                {
+                    foreach (DataGridViewCell cell in row.Cells)
+                    {
+                        string val = cell.Value?.ToString()?.Trim();
+
+                        if (!string.IsNullOrEmpty(val) && selectedDrawStrings.Contains(val))
+                        {
+                            cell.Style.BackColor = Color.LightGreen;
+                        }
+                        else
+                        {
+                            cell.Style.BackColor = Color.White;
+                        }
+                    }
+                }
+            }
+
             // Repaint cells based on `selectedDrawStrings`
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
@@ -118,11 +144,6 @@ namespace FinalTask
                     selectedTimes.Add(dt.TimeOfDay);
                 }
             }
-
-            // Always include current slot
-            TimeSpan currentSlot = GetCurrentDrawSlot(DateTime.Now).TimeOfDay;
-            if (!selectedTimes.Contains(currentSlot))
-                selectedTimes.Insert(0, currentSlot);
 
             return selectedTimes;
         }

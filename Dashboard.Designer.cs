@@ -32,16 +32,6 @@
             this.HeadlinePanel = new System.Windows.Forms.Panel();
             this.headlineLable = new System.Windows.Forms.Label();
             this.topPanel = new System.Windows.Forms.Panel();
-            this.textBoxFResult10 = new System.Windows.Forms.TextBox();
-            this.textBoxFResult9 = new System.Windows.Forms.TextBox();
-            this.textBoxFResult8 = new System.Windows.Forms.TextBox();
-            this.textBoxFResult7 = new System.Windows.Forms.TextBox();
-            this.textBoxFResult6 = new System.Windows.Forms.TextBox();
-            this.textBoxFResult5 = new System.Windows.Forms.TextBox();
-            this.textBoxFResult4 = new System.Windows.Forms.TextBox();
-            this.textBoxFResult3 = new System.Windows.Forms.TextBox();
-            this.textBoxFResult2 = new System.Windows.Forms.TextBox();
-            this.textBoxFResult1 = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.balanceLable = new System.Windows.Forms.Label();
             this.userIDPanel = new System.Windows.Forms.Panel();
@@ -406,6 +396,16 @@
             this.panel12 = new System.Windows.Forms.Panel();
             this.AllLable = new System.Windows.Forms.Label();
             this.AllCheckBox = new System.Windows.Forms.CheckBox();
+            this.textBoxFResult10 = new System.Windows.Forms.TextBox();
+            this.textBoxFResult9 = new System.Windows.Forms.TextBox();
+            this.textBoxFResult8 = new System.Windows.Forms.TextBox();
+            this.textBoxFResult7 = new System.Windows.Forms.TextBox();
+            this.textBoxFResult6 = new System.Windows.Forms.TextBox();
+            this.textBoxFResult5 = new System.Windows.Forms.TextBox();
+            this.textBoxFResult4 = new System.Windows.Forms.TextBox();
+            this.textBoxFResult3 = new System.Windows.Forms.TextBox();
+            this.textBoxFResult2 = new System.Windows.Forms.TextBox();
+            this.textBoxFResult1 = new System.Windows.Forms.TextBox();
             this.HeadlinePanel.SuspendLayout();
             this.topPanel.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -487,126 +487,6 @@
             this.topPanel.Name = "topPanel";
             this.topPanel.Size = new System.Drawing.Size(1262, 116);
             this.topPanel.TabIndex = 0;
-            // 
-            // textBoxFResult10
-            // 
-            this.textBoxFResult10.BackColor = System.Drawing.Color.Crimson;
-            this.textBoxFResult10.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxFResult10.ForeColor = System.Drawing.Color.White;
-            this.textBoxFResult10.Location = new System.Drawing.Point(1111, 45);
-            this.textBoxFResult10.Name = "textBoxFResult10";
-            this.textBoxFResult10.ReadOnly = true;
-            this.textBoxFResult10.Size = new System.Drawing.Size(103, 30);
-            this.textBoxFResult10.TabIndex = 73;
-            this.textBoxFResult10.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBoxFResult9
-            // 
-            this.textBoxFResult9.BackColor = System.Drawing.Color.LightSkyBlue;
-            this.textBoxFResult9.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxFResult9.ForeColor = System.Drawing.Color.White;
-            this.textBoxFResult9.Location = new System.Drawing.Point(1005, 45);
-            this.textBoxFResult9.Name = "textBoxFResult9";
-            this.textBoxFResult9.ReadOnly = true;
-            this.textBoxFResult9.Size = new System.Drawing.Size(103, 30);
-            this.textBoxFResult9.TabIndex = 72;
-            this.textBoxFResult9.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBoxFResult8
-            // 
-            this.textBoxFResult8.BackColor = System.Drawing.Color.CornflowerBlue;
-            this.textBoxFResult8.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxFResult8.ForeColor = System.Drawing.Color.White;
-            this.textBoxFResult8.Location = new System.Drawing.Point(896, 45);
-            this.textBoxFResult8.Name = "textBoxFResult8";
-            this.textBoxFResult8.ReadOnly = true;
-            this.textBoxFResult8.Size = new System.Drawing.Size(103, 30);
-            this.textBoxFResult8.TabIndex = 71;
-            this.textBoxFResult8.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBoxFResult7
-            // 
-            this.textBoxFResult7.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.textBoxFResult7.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxFResult7.ForeColor = System.Drawing.Color.White;
-            this.textBoxFResult7.Location = new System.Drawing.Point(787, 45);
-            this.textBoxFResult7.Name = "textBoxFResult7";
-            this.textBoxFResult7.ReadOnly = true;
-            this.textBoxFResult7.Size = new System.Drawing.Size(103, 30);
-            this.textBoxFResult7.TabIndex = 70;
-            this.textBoxFResult7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBoxFResult6
-            // 
-            this.textBoxFResult6.BackColor = System.Drawing.Color.BlueViolet;
-            this.textBoxFResult6.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxFResult6.ForeColor = System.Drawing.Color.White;
-            this.textBoxFResult6.Location = new System.Drawing.Point(679, 45);
-            this.textBoxFResult6.Name = "textBoxFResult6";
-            this.textBoxFResult6.ReadOnly = true;
-            this.textBoxFResult6.Size = new System.Drawing.Size(103, 30);
-            this.textBoxFResult6.TabIndex = 69;
-            this.textBoxFResult6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBoxFResult5
-            // 
-            this.textBoxFResult5.BackColor = System.Drawing.Color.Indigo;
-            this.textBoxFResult5.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxFResult5.ForeColor = System.Drawing.Color.White;
-            this.textBoxFResult5.Location = new System.Drawing.Point(572, 45);
-            this.textBoxFResult5.Name = "textBoxFResult5";
-            this.textBoxFResult5.ReadOnly = true;
-            this.textBoxFResult5.Size = new System.Drawing.Size(103, 30);
-            this.textBoxFResult5.TabIndex = 68;
-            this.textBoxFResult5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBoxFResult4
-            // 
-            this.textBoxFResult4.BackColor = System.Drawing.Color.Thistle;
-            this.textBoxFResult4.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxFResult4.ForeColor = System.Drawing.Color.White;
-            this.textBoxFResult4.Location = new System.Drawing.Point(463, 45);
-            this.textBoxFResult4.Name = "textBoxFResult4";
-            this.textBoxFResult4.ReadOnly = true;
-            this.textBoxFResult4.Size = new System.Drawing.Size(103, 30);
-            this.textBoxFResult4.TabIndex = 67;
-            this.textBoxFResult4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBoxFResult3
-            // 
-            this.textBoxFResult3.BackColor = System.Drawing.Color.DarkViolet;
-            this.textBoxFResult3.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxFResult3.ForeColor = System.Drawing.Color.White;
-            this.textBoxFResult3.Location = new System.Drawing.Point(354, 45);
-            this.textBoxFResult3.Name = "textBoxFResult3";
-            this.textBoxFResult3.ReadOnly = true;
-            this.textBoxFResult3.Size = new System.Drawing.Size(103, 30);
-            this.textBoxFResult3.TabIndex = 66;
-            this.textBoxFResult3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBoxFResult2
-            // 
-            this.textBoxFResult2.BackColor = System.Drawing.Color.Violet;
-            this.textBoxFResult2.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxFResult2.ForeColor = System.Drawing.Color.White;
-            this.textBoxFResult2.Location = new System.Drawing.Point(243, 45);
-            this.textBoxFResult2.Name = "textBoxFResult2";
-            this.textBoxFResult2.ReadOnly = true;
-            this.textBoxFResult2.Size = new System.Drawing.Size(103, 30);
-            this.textBoxFResult2.TabIndex = 65;
-            this.textBoxFResult2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBoxFResult1
-            // 
-            this.textBoxFResult1.BackColor = System.Drawing.Color.Magenta;
-            this.textBoxFResult1.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxFResult1.ForeColor = System.Drawing.Color.White;
-            this.textBoxFResult1.Location = new System.Drawing.Point(134, 45);
-            this.textBoxFResult1.Name = "textBoxFResult1";
-            this.textBoxFResult1.ReadOnly = true;
-            this.textBoxFResult1.Size = new System.Drawing.Size(103, 30);
-            this.textBoxFResult1.TabIndex = 64;
-            this.textBoxFResult1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // panel1
             // 
@@ -4468,6 +4348,126 @@
             this.AllCheckBox.UseVisualStyleBackColor = false;
             this.AllCheckBox.CheckedChanged += new System.EventHandler(this.AllCheckBox_CheckedChanged);
             // 
+            // textBoxFResult10
+            // 
+            this.textBoxFResult10.BackColor = System.Drawing.Color.Crimson;
+            this.textBoxFResult10.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFResult10.ForeColor = System.Drawing.Color.White;
+            this.textBoxFResult10.Location = new System.Drawing.Point(1068, 43);
+            this.textBoxFResult10.Name = "textBoxFResult10";
+            this.textBoxFResult10.ReadOnly = true;
+            this.textBoxFResult10.Size = new System.Drawing.Size(103, 30);
+            this.textBoxFResult10.TabIndex = 103;
+            this.textBoxFResult10.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBoxFResult9
+            // 
+            this.textBoxFResult9.BackColor = System.Drawing.Color.LightSkyBlue;
+            this.textBoxFResult9.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFResult9.ForeColor = System.Drawing.Color.White;
+            this.textBoxFResult9.Location = new System.Drawing.Point(962, 43);
+            this.textBoxFResult9.Name = "textBoxFResult9";
+            this.textBoxFResult9.ReadOnly = true;
+            this.textBoxFResult9.Size = new System.Drawing.Size(103, 30);
+            this.textBoxFResult9.TabIndex = 102;
+            this.textBoxFResult9.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBoxFResult8
+            // 
+            this.textBoxFResult8.BackColor = System.Drawing.Color.CornflowerBlue;
+            this.textBoxFResult8.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFResult8.ForeColor = System.Drawing.Color.White;
+            this.textBoxFResult8.Location = new System.Drawing.Point(853, 43);
+            this.textBoxFResult8.Name = "textBoxFResult8";
+            this.textBoxFResult8.ReadOnly = true;
+            this.textBoxFResult8.Size = new System.Drawing.Size(103, 30);
+            this.textBoxFResult8.TabIndex = 101;
+            this.textBoxFResult8.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBoxFResult7
+            // 
+            this.textBoxFResult7.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.textBoxFResult7.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFResult7.ForeColor = System.Drawing.Color.White;
+            this.textBoxFResult7.Location = new System.Drawing.Point(744, 43);
+            this.textBoxFResult7.Name = "textBoxFResult7";
+            this.textBoxFResult7.ReadOnly = true;
+            this.textBoxFResult7.Size = new System.Drawing.Size(103, 30);
+            this.textBoxFResult7.TabIndex = 100;
+            this.textBoxFResult7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBoxFResult6
+            // 
+            this.textBoxFResult6.BackColor = System.Drawing.Color.BlueViolet;
+            this.textBoxFResult6.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFResult6.ForeColor = System.Drawing.Color.White;
+            this.textBoxFResult6.Location = new System.Drawing.Point(636, 43);
+            this.textBoxFResult6.Name = "textBoxFResult6";
+            this.textBoxFResult6.ReadOnly = true;
+            this.textBoxFResult6.Size = new System.Drawing.Size(103, 30);
+            this.textBoxFResult6.TabIndex = 99;
+            this.textBoxFResult6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBoxFResult5
+            // 
+            this.textBoxFResult5.BackColor = System.Drawing.Color.Indigo;
+            this.textBoxFResult5.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFResult5.ForeColor = System.Drawing.Color.White;
+            this.textBoxFResult5.Location = new System.Drawing.Point(529, 43);
+            this.textBoxFResult5.Name = "textBoxFResult5";
+            this.textBoxFResult5.ReadOnly = true;
+            this.textBoxFResult5.Size = new System.Drawing.Size(103, 30);
+            this.textBoxFResult5.TabIndex = 98;
+            this.textBoxFResult5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBoxFResult4
+            // 
+            this.textBoxFResult4.BackColor = System.Drawing.Color.Thistle;
+            this.textBoxFResult4.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFResult4.ForeColor = System.Drawing.Color.White;
+            this.textBoxFResult4.Location = new System.Drawing.Point(420, 43);
+            this.textBoxFResult4.Name = "textBoxFResult4";
+            this.textBoxFResult4.ReadOnly = true;
+            this.textBoxFResult4.Size = new System.Drawing.Size(103, 30);
+            this.textBoxFResult4.TabIndex = 97;
+            this.textBoxFResult4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBoxFResult3
+            // 
+            this.textBoxFResult3.BackColor = System.Drawing.Color.DarkViolet;
+            this.textBoxFResult3.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFResult3.ForeColor = System.Drawing.Color.White;
+            this.textBoxFResult3.Location = new System.Drawing.Point(311, 43);
+            this.textBoxFResult3.Name = "textBoxFResult3";
+            this.textBoxFResult3.ReadOnly = true;
+            this.textBoxFResult3.Size = new System.Drawing.Size(103, 30);
+            this.textBoxFResult3.TabIndex = 96;
+            this.textBoxFResult3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBoxFResult2
+            // 
+            this.textBoxFResult2.BackColor = System.Drawing.Color.Violet;
+            this.textBoxFResult2.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFResult2.ForeColor = System.Drawing.Color.White;
+            this.textBoxFResult2.Location = new System.Drawing.Point(200, 43);
+            this.textBoxFResult2.Name = "textBoxFResult2";
+            this.textBoxFResult2.ReadOnly = true;
+            this.textBoxFResult2.Size = new System.Drawing.Size(103, 30);
+            this.textBoxFResult2.TabIndex = 95;
+            this.textBoxFResult2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBoxFResult1
+            // 
+            this.textBoxFResult1.BackColor = System.Drawing.Color.Magenta;
+            this.textBoxFResult1.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFResult1.ForeColor = System.Drawing.Color.White;
+            this.textBoxFResult1.Location = new System.Drawing.Point(91, 43);
+            this.textBoxFResult1.Name = "textBoxFResult1";
+            this.textBoxFResult1.ReadOnly = true;
+            this.textBoxFResult1.Size = new System.Drawing.Size(103, 30);
+            this.textBoxFResult1.TabIndex = 94;
+            this.textBoxFResult1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -4717,16 +4717,6 @@
         private System.Windows.Forms.TextBox txtTotalAmt;
         private System.Windows.Forms.TextBox txtTotalQty;
         private System.Windows.Forms.Label labelBlock;
-        private System.Windows.Forms.TextBox textBoxFResult10;
-        private System.Windows.Forms.TextBox textBoxFResult9;
-        private System.Windows.Forms.TextBox textBoxFResult8;
-        private System.Windows.Forms.TextBox textBoxFResult7;
-        private System.Windows.Forms.TextBox textBoxFResult6;
-        private System.Windows.Forms.TextBox textBoxFResult5;
-        private System.Windows.Forms.TextBox textBoxFResult4;
-        private System.Windows.Forms.TextBox textBoxFResult3;
-        private System.Windows.Forms.TextBox textBoxFResult2;
-        private System.Windows.Forms.TextBox textBoxFResult1;
         private System.Windows.Forms.Label labelB0;
         private System.Windows.Forms.TextBox txtB0;
         private System.Windows.Forms.Label labelB1;
@@ -5024,6 +5014,16 @@
         private System.Windows.Forms.Panel panel12;
         private System.Windows.Forms.Label AllLable;
         private System.Windows.Forms.CheckBox AllCheckBox;
+        private System.Windows.Forms.TextBox textBoxFResult10;
+        private System.Windows.Forms.TextBox textBoxFResult9;
+        private System.Windows.Forms.TextBox textBoxFResult8;
+        private System.Windows.Forms.TextBox textBoxFResult7;
+        private System.Windows.Forms.TextBox textBoxFResult6;
+        private System.Windows.Forms.TextBox textBoxFResult5;
+        private System.Windows.Forms.TextBox textBoxFResult4;
+        private System.Windows.Forms.TextBox textBoxFResult3;
+        private System.Windows.Forms.TextBox textBoxFResult2;
+        private System.Windows.Forms.TextBox textBoxFResult1;
     }
 }
 

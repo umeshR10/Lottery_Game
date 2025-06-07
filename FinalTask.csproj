@@ -97,6 +97,12 @@
     <Compile Include="Results.Designer.cs">
       <DependentUpon>Results.cs</DependentUpon>
     </Compile>
+    <Compile Include="TicketDetailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TicketDetailForm.Designer.cs">
+      <DependentUpon>TicketDetailForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AccountsForm.resx">
       <DependentUpon>AccountsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -130,6 +136,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Results.resx">
       <DependentUpon>Results.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TicketDetailForm.resx">
+      <DependentUpon>TicketDetailForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

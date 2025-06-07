@@ -30,10 +30,10 @@
         {
             this.lblRePrint = new System.Windows.Forms.Label();
             this.headPanel = new System.Windows.Forms.Panel();
-            this.dateTimePicker = new System.Windows.Forms.DateTimePicker();
-            this.textBoxSearch = new System.Windows.Forms.TextBox();
-            this.btnSubmit = new System.Windows.Forms.Button();
             this.btnHome = new System.Windows.Forms.Button();
+            this.btnSubmit = new System.Windows.Forms.Button();
+            this.textBoxSearch = new System.Windows.Forms.TextBox();
+            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.dataGridView = new System.Windows.Forms.DataGridView();
             this.headPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
@@ -56,7 +56,7 @@
             this.headPanel.Controls.Add(this.btnHome);
             this.headPanel.Controls.Add(this.btnSubmit);
             this.headPanel.Controls.Add(this.textBoxSearch);
-            this.headPanel.Controls.Add(this.dateTimePicker);
+            this.headPanel.Controls.Add(this.dateTimePicker1);
             this.headPanel.Controls.Add(this.lblRePrint);
             this.headPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.headPanel.Location = new System.Drawing.Point(0, 0);
@@ -64,22 +64,17 @@
             this.headPanel.Size = new System.Drawing.Size(1262, 100);
             this.headPanel.TabIndex = 1;
             // 
-            // dateTimePicker
+            // btnHome
             // 
-            this.dateTimePicker.CalendarFont = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dateTimePicker.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dateTimePicker.Location = new System.Drawing.Point(148, 53);
-            this.dateTimePicker.Name = "dateTimePicker";
-            this.dateTimePicker.Size = new System.Drawing.Size(200, 30);
-            this.dateTimePicker.TabIndex = 1;
-            // 
-            // textBoxSearch
-            // 
-            this.textBoxSearch.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxSearch.Location = new System.Drawing.Point(370, 53);
-            this.textBoxSearch.Name = "textBoxSearch";
-            this.textBoxSearch.Size = new System.Drawing.Size(164, 30);
-            this.textBoxSearch.TabIndex = 2;
+            this.btnHome.BackColor = System.Drawing.Color.LightSeaGreen;
+            this.btnHome.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHome.Location = new System.Drawing.Point(1139, 32);
+            this.btnHome.Name = "btnHome";
+            this.btnHome.Size = new System.Drawing.Size(82, 51);
+            this.btnHome.TabIndex = 4;
+            this.btnHome.Text = "Home";
+            this.btnHome.UseVisualStyleBackColor = false;
+            this.btnHome.Click += new System.EventHandler(this.btnHome_Click);
             // 
             // btnSubmit
             // 
@@ -92,17 +87,23 @@
             this.btnSubmit.Text = "Submit";
             this.btnSubmit.UseVisualStyleBackColor = false;
             // 
-            // btnHome
+            // textBoxSearch
             // 
-            this.btnHome.BackColor = System.Drawing.Color.LightSeaGreen;
-            this.btnHome.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnHome.Location = new System.Drawing.Point(1123, 53);
-            this.btnHome.Name = "btnHome";
-            this.btnHome.Size = new System.Drawing.Size(82, 30);
-            this.btnHome.TabIndex = 4;
-            this.btnHome.Text = "Home";
-            this.btnHome.UseVisualStyleBackColor = false;
-            this.btnHome.Click += new System.EventHandler(this.btnHome_Click);
+            this.textBoxSearch.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxSearch.Location = new System.Drawing.Point(370, 53);
+            this.textBoxSearch.Name = "textBoxSearch";
+            this.textBoxSearch.Size = new System.Drawing.Size(164, 30);
+            this.textBoxSearch.TabIndex = 2;
+            // 
+            // dateTimePicker1
+            // 
+            this.dateTimePicker1.CalendarFont = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dateTimePicker1.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dateTimePicker1.Location = new System.Drawing.Point(148, 53);
+            this.dateTimePicker1.Name = "dateTimePicker1";
+            this.dateTimePicker1.Size = new System.Drawing.Size(200, 30);
+            this.dateTimePicker1.TabIndex = 1;
+            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
             // dataGridView
             // 
@@ -115,6 +116,7 @@
             this.dataGridView.RowTemplate.Height = 24;
             this.dataGridView.Size = new System.Drawing.Size(1237, 559);
             this.dataGridView.TabIndex = 2;
+            this.dataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
             // 
             // RePrintForm
             // 
@@ -138,7 +140,7 @@
 
         private System.Windows.Forms.Label lblRePrint;
         private System.Windows.Forms.Panel headPanel;
-        private System.Windows.Forms.DateTimePicker dateTimePicker;
+        private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.Button btnSubmit;
         private System.Windows.Forms.TextBox textBoxSearch;
         private System.Windows.Forms.Button btnHome;

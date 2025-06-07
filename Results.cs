@@ -74,7 +74,7 @@ namespace FinalTask
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                using (SqlCommand cmd = new SqlCommand(query,conn))
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     try
                     {
@@ -85,38 +85,47 @@ namespace FinalTask
 
                         dataGridView1.Columns.Clear();
                         dataGridView1.Rows.Clear();
+                        dataGridView1.ColumnHeadersVisible = false; // Hide headers
 
-                        int maxItems = 0;
-                        List<string[]> resultRows = new List<string[]>();
-
-                        while (reader.Read())
+                        if (reader.Read())
                         {
-                            string resultList = reader.GetString(0); // Get ResultList
+                            string resultList = reader.GetString(0);
                             string[] results = resultList.Split(',');
 
-                            if (results.Length > maxItems)
-                                maxItems = results.Length;
+                            int columns = 10;
+                            int rows = 10;
 
-                            resultRows.Add(results);
+                            // Add 10 columns without headers
+                            for (int i = 0; i < columns; i++)
+                            {
+                                dataGridView1.Columns.Add($"col{i}", "");
+                            }
+
+                            // Adjust cell sizes and style
+                            dataGridView1.RowTemplate.Height = 30;
+                            foreach (DataGridViewColumn col in dataGridView1.Columns)
+                            {
+                                col.Width = 50;
+                                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                            }
+
+                            // Fill rows with results
+                            for (int r = 0; r < rows; r++)
+                            {
+                                var rowValues = new List<string>();
+                                for (int c = 0; c < columns; c++)
+                                {
+                                    int index = r * columns + c;
+                                    rowValues.Add(index < results.Length ? results[index] : "");
+                                }
+                                dataGridView1.Rows.Add(rowValues.ToArray());
+                            }
+                            ResizeDataGridViewHeight();
                         }
-
-                        // Create columns dynamically
-                        for (int i = 0; i < maxItems; i++)
+                        else
                         {
-                            dataGridView1.Columns.Add($"Col{i + 1}", $"Result {i + 1}");
+                            MessageBox.Show("No results found for selected draw.");
                         }
-
-                        dataGridView1.RowTemplate.Height = 40;
-                        dataGridView1.ColumnHeadersHeight = 80;
-
-                        // Add rows
-                        foreach (var resultArray in resultRows)
-                        {
-                            dataGridView1.Rows.Add(resultArray);
-                        }
-                        
-                        // Resize DataGridView after loading results
-                        ResizeDataGridView();
                     }
                     catch (Exception ex)
                     {
@@ -124,6 +133,14 @@ namespace FinalTask
                     }
                 }
             }
+        }
+        private void ResizeDataGridViewHeight()
+        {
+            int totalRowHeight = dataGridView1.Rows.GetRowsHeight(DataGridViewElementStates.Visible);
+            int columnHeaderHeight = dataGridView1.ColumnHeadersVisible ? dataGridView1.ColumnHeadersHeight : 0;
+            int borderHeight = dataGridView1.Height - dataGridView1.ClientSize.Height;
+
+            dataGridView1.Height = totalRowHeight + columnHeaderHeight + borderHeight;
         }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {

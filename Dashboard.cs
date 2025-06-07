@@ -309,11 +309,78 @@ namespace FinalTask
             LoginForm loginForm = new LoginForm();
             loginForm.Show();
         }
+        //private void GenerateAndSaveAllDrawsForToday()
+        //{
+        //    DateTime today = DateTime.Today;
+        //    TimeSpan start = TimeSpan.FromHours(8);   // NEW: Start at 08:00 
+        //    TimeSpan end = TimeSpan.FromHours(22);    // End at 10:00 PM
+
+        //    using (SqlConnection conn = new SqlConnection(connectionString))
+        //    {
+        //        conn.Open();
+
+        //        // Check if today's results already exist
+        //        string checkQuery = "SELECT COUNT(*) FROM DrawResults WHERE DrawDate = @date";
+        //        using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
+        //        {
+        //            checkCmd.Parameters.AddWithValue("@date", today);
+        //            int existingCount = (int)checkCmd.ExecuteScalar();
+
+        //            // There should be 56 draws from 08:15 to 22:00 (inclusive)
+        //            if (existingCount >= 56)
+        //                return; // All results already exist
+        //        }
+
+        //        List<(DateTime drawTime, string resultCSV)> allResults = new List<(DateTime, string)>();
+        //        Random rnd = new Random();
+        //        HashSet<string> generatedNumbers = new HashSet<string>();
+
+        //        for (TimeSpan time = start; time <= end; time = time.Add(TimeSpan.FromMinutes(15)))
+        //        {
+        //            List<string> resultsForSlot = new List<string>();
+        //            generatedNumbers.Clear();
+
+        //            for (int i = 0; i < 10; i++)
+        //            {
+        //                int rangeStart = i * 100;
+        //                int rangeEnd = rangeStart + 99;
+        //                string result;
+
+        //                do
+        //                {
+        //                    result = rnd.Next(rangeStart, rangeEnd + 1).ToString("D4");
+        //                } while (generatedNumbers.Contains(result));
+
+        //                resultsForSlot.Add(result);
+        //                generatedNumbers.Add(result);
+        //            }
+
+        //            string resultCSV = string.Join(",", resultsForSlot);
+        //            DateTime drawDateTime = today.Add(time);
+        //            allResults.Add((drawDateTime, resultCSV));
+        //        }
+
+        //        // Insert all generated draw results
+        //        foreach (var (drawTime, resultCSV) in allResults)
+        //        {
+        //            string insertQuery = @"INSERT INTO DrawResults (DrawDate, DrawTime, ResultList)
+        //                           VALUES (@date, @time, @results)";
+        //            using (SqlCommand insertCmd = new SqlCommand(insertQuery, conn))
+        //            {
+        //                insertCmd.Parameters.AddWithValue("@date", drawTime.Date);
+        //                insertCmd.Parameters.AddWithValue("@time", drawTime.TimeOfDay);
+        //                insertCmd.Parameters.AddWithValue("@results", resultCSV);
+        //                insertCmd.ExecuteNonQuery();
+        //            }
+        //        }
+        //    }
+        //}
         private void GenerateAndSaveAllDrawsForToday()
         {
             DateTime today = DateTime.Today;
             TimeSpan start = TimeSpan.FromHours(8);   // NEW: Start at 08:00 
             TimeSpan end = TimeSpan.FromHours(22);    // End at 10:00 PM
+            int totalDraws = 56; // number of draws between 08:15 and 22:00 (inclusive)
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -326,56 +393,74 @@ namespace FinalTask
                     checkCmd.Parameters.AddWithValue("@date", today);
                     int existingCount = (int)checkCmd.ExecuteScalar();
 
-                    // There should be 56 draws from 08:15 to 22:00 (inclusive)
-                    if (existingCount >= 56)
-                        return; // All results already exist
+                    if (existingCount >= totalDraws)
+                        return; // Already generated
                 }
 
-                List<(DateTime drawTime, string resultCSV)> allResults = new List<(DateTime, string)>();
                 Random rnd = new Random();
-                HashSet<string> generatedNumbers = new HashSet<string>();
 
-                for (TimeSpan time = start; time <= end; time = time.Add(TimeSpan.FromMinutes(15)))
+                // Step 1: Pre-generate 56 unique numbers for each of the 100 blocks
+                // Dictionary: blockIndex -> List of unique numbers (strings)
+                Dictionary<int, List<string>> blockNumbers = new Dictionary<int, List<string>>();
+
+                for (int block = 0; block < 100; block++)
                 {
-                    List<string> resultsForSlot = new List<string>();
-                    generatedNumbers.Clear();
+                    int rangeStart = block * 100;
+                    int rangeEnd = rangeStart + 99;
 
-                    for (int i = 0; i < 10; i++)
+                    HashSet<int> uniqueNums = new HashSet<int>();
+                    List<string> blockList = new List<string>();
+
+                    while (uniqueNums.Count < totalDraws)
                     {
-                        int rangeStart = i * 100;
-                        int rangeEnd = rangeStart + 99;
-                        string result;
-
-                        do
+                        int candidate = rnd.Next(rangeStart, rangeEnd + 1);
+                        if (!uniqueNums.Contains(candidate))
                         {
-                            result = rnd.Next(rangeStart, rangeEnd + 1).ToString("D4");
-                        } while (generatedNumbers.Contains(result));
-
-                        resultsForSlot.Add(result);
-                        generatedNumbers.Add(result);
+                            uniqueNums.Add(candidate);
+                            blockList.Add(candidate.ToString("D4"));
+                        }
                     }
 
-                    string resultCSV = string.Join(",", resultsForSlot);
-                    DateTime drawDateTime = today.Add(time);
-                    allResults.Add((drawDateTime, resultCSV));
+                    // Shuffle blockList so draws get random distribution
+                    blockList = blockList.OrderBy(x => rnd.Next()).ToList();
+
+                    blockNumbers[block] = blockList;
                 }
 
-                // Insert all generated draw results
-                foreach (var (drawTime, resultCSV) in allResults)
+                // Step 2: Construct draws - each draw gets the i-th number from every block
+                List<(DateTime drawTime, string resultCSV)> allResults = new List<(DateTime, string)>();
+                TimeSpan drawTime = start;
+
+                for (int drawIndex = 0; drawIndex < totalDraws; drawIndex++)
+                {
+                    List<string> drawResults = new List<string>();
+
+                    for (int block = 0; block < 100; block++)
+                    {
+                        drawResults.Add(blockNumbers[block][drawIndex]);
+                    }
+
+                    string resultCSV = string.Join(",", drawResults);
+                    DateTime drawDateTime = today.Add(drawTime);
+                    allResults.Add((drawDateTime, resultCSV));
+                    drawTime = drawTime.Add(TimeSpan.FromMinutes(15));
+                }
+
+                // Step 3: Insert all draws into DB
+                foreach (var (dt, csv) in allResults)
                 {
                     string insertQuery = @"INSERT INTO DrawResults (DrawDate, DrawTime, ResultList)
                                    VALUES (@date, @time, @results)";
                     using (SqlCommand insertCmd = new SqlCommand(insertQuery, conn))
                     {
-                        insertCmd.Parameters.AddWithValue("@date", drawTime.Date);
-                        insertCmd.Parameters.AddWithValue("@time", drawTime.TimeOfDay);
-                        insertCmd.Parameters.AddWithValue("@results", resultCSV);
+                        insertCmd.Parameters.AddWithValue("@date", dt.Date);
+                        insertCmd.Parameters.AddWithValue("@time", dt.TimeOfDay);
+                        insertCmd.Parameters.AddWithValue("@results", csv);
                         insertCmd.ExecuteNonQuery();
                     }
                 }
             }
         }
-
         private void LoadLatestResults()
         {
             DateTime now = DateTime.Now;
@@ -812,8 +897,11 @@ namespace FinalTask
             TextBox totalQtyBox = this.Controls.Find("txtTotalQty", true).FirstOrDefault() as TextBox;
             TextBox totalAmtBox = this.Controls.Find("txtTotalAmt", true).FirstOrDefault() as TextBox;
 
-            if (totalQtyBox != null) totalQtyBox.Text = totalQty.ToString();
-            if (totalAmtBox != null) totalAmtBox.Text = (totalQty * 2).ToString("N0");
+            int multiplier = _advanceDrawTimes != null && _advanceDrawTimes.Count > 0 ? _advanceDrawTimes.Count : 1;
+
+            if (totalQtyBox != null) totalQtyBox.Text = (totalQty * multiplier).ToString();
+            if (totalAmtBox != null) totalAmtBox.Text = ((totalQty * 2) * multiplier).ToString("N0");
+
         }
 
         // This method is used to handle the text changed event for the text boxes
@@ -1087,6 +1175,7 @@ namespace FinalTask
             int totalQuantity = ticketsToBuy.Sum(t => t.qty);
             int drawSlotCount = _advanceDrawTimes.Any() ? _advanceDrawTimes.Count : 1;
             decimal totalAmount = ticketsToBuy.Sum(t => t.amt) * drawSlotCount;
+            decimal perDrawAmount = ticketsToBuy.Sum(t => t.amt);
 
             if (totalAmount > _balance)
             {
@@ -1145,7 +1234,7 @@ namespace FinalTask
                             cmd.Parameters.AddWithValue("@qtys", quantities);
                             cmd.Parameters.AddWithValue("@amts", amounts);
                             cmd.Parameters.AddWithValue("@totalQty", totalQuantity);
-                            cmd.Parameters.AddWithValue("@totalAmt", totalAmount);
+                            cmd.Parameters.AddWithValue("@totalAmt", perDrawAmount);
                             cmd.Parameters.AddWithValue("@tt", ticketTime);
                             cmd.Parameters.AddWithValue("@bc", barcode);
 

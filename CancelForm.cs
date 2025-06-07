@@ -186,7 +186,7 @@ namespace FinalTask
                 {
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("Ticket canceled successfully. Balance refunded.");
+                    //MessageBox.Show("Ticket canceled successfully. Balance refunded.");
                 }
                 catch (Exception ex)
                 {
