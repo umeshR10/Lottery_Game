@@ -10,8 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using System.Drawing.Printing;
-using System.IO;
 
 namespace FinalTask
 {
@@ -26,12 +24,6 @@ namespace FinalTask
         private bool isLabelViewMode = false;
         private int labelOffset = 0;  // 0 for default 0–999, 1000 for 1000–1999, ..., 9000 for 9000–9999
         private bool isUpdatingAllCheckBox = false;
-        private List<(string number, int qty)> _printTickets = new List<(string number, int qty)>();
-        private int _printTotalQty = 0;
-        private decimal _printTotalAmt = 0;
-        private string _printUsername = "";
-        private int _printUserId;
-        private string _printDrawTime = "";
         public Dashboard(int id, string username, decimal balance)
         {
             InitializeComponent();
@@ -1043,7 +1035,6 @@ namespace FinalTask
         {
             userEnteredNumbers.Clear();
             checkBox0_99.Checked = true;
-            _advanceDrawTimes.Clear();
 
             // Clear backing dictionary values
             for (int i = 0; i < 1000; i++)
@@ -1199,9 +1190,9 @@ namespace FinalTask
             DateTime nextDraw = GetNextDrawSlot(DateTime.Now);
             TimeSpan ticketTime = DateTime.Now.TimeOfDay;
 
-            //StringBuilder summary = new StringBuilder();
-            //summary.AppendLine("Ticket Purchase Summary:");
-            //summary.AppendLine("Number\tQty\tAmount");
+            StringBuilder summary = new StringBuilder();
+            summary.AppendLine("Ticket Purchase Summary:");
+            summary.AppendLine("Number\tQty\tAmount");
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -1264,58 +1255,26 @@ namespace FinalTask
                     _balance -= totalAmount;
                     balanceLable.Text = _balance.ToString("N2");
 
-                    //foreach (var (number, qty, amt) in ticketsToBuy)
-                    //{
-                    //    summary.AppendLine($"{number}\t{qty}\t₹{amt:N2}");
-                    //}
-
-                    //summary.AppendLine("-----------------------------");
-                    //summary.AppendLine($"Total Qty: {totalQuantity}");
-                    //summary.AppendLine($"Total Amount: ₹{totalAmount:N2}");
-                    //summary.AppendLine($"× {drawSlotCount} Draw Slot(s)");
-
-                    //if (_advanceDrawTimes.Count > 0)
-                    //{
-                    //    summary.AppendLine("Advance Draw Times:");
-                    //    foreach (var dt in _advanceDrawTimes)
-                    //    {
-                    //        summary.AppendLine($"→ {dt:hh\\:mm}");
-                    //    }
-                    //}
-
-                    //MessageBox.Show(summary.ToString(), "Purchase Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    // Prepare data for print
-                    _printTickets = ticketsToBuy.Select(t => (t.number, t.qty)).ToList();
-                    _printTotalQty = totalQuantity;
-                    _printTotalAmt = totalAmount;
-                    _printUsername = _username;
-                    _printUserId = _userId;
-                    _printDrawTime = nextDraw.ToString("hh:mmtt");
-
-                    // Trigger print
-                    List<TimeSpan> drawSlotsToPrint = _advanceDrawTimes.Any() ? _advanceDrawTimes : new List<TimeSpan> { nextDraw.TimeOfDay };
-
-                    foreach (TimeSpan drawSlot in drawSlotsToPrint)
+                    foreach (var (number, qty, amt) in ticketsToBuy)
                     {
-                        _printTickets = ticketsToBuy.Select(t => (t.number, t.qty)).ToList();
-                        _printTotalQty = totalQuantity;
-                        _printTotalAmt = ticketsToBuy.Sum(t => t.amt); // Per-draw amount
-                        _printUsername = _username;
-                        _printUserId = _userId;
-                        _printDrawTime = DateTime.Today.Add(drawSlot).ToString("hh:mmtt");
+                        summary.AppendLine($"{number}\t{qty}\t₹{amt:N2}");
+                    }
 
-                        PrintDocument pd = new PrintDocument();
-                        pd.PrintPage += new PrintPageEventHandler(PrintReceipt);
+                    summary.AppendLine("-----------------------------");
+                    summary.AppendLine($"Total Qty: {totalQuantity}");
+                    summary.AppendLine($"Total Amount: ₹{totalAmount:N2}");
+                    summary.AppendLine($"× {drawSlotCount} Draw Slot(s)");
 
-                        PrintDialog dlg = new PrintDialog();
-                        dlg.Document = pd;
-
-                        if (dlg.ShowDialog() == DialogResult.OK)
+                    if (_advanceDrawTimes.Count > 0)
+                    {
+                        summary.AppendLine("Advance Draw Times:");
+                        foreach (var dt in _advanceDrawTimes)
                         {
-                            pd.Print();
+                            summary.AppendLine($"→ {dt:hh\\:mm}");
                         }
                     }
 
+                    MessageBox.Show(summary.ToString(), "Purchase Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     ClearAllInputs();
                     _advanceDrawTimes.Clear();
                 }
@@ -1366,18 +1325,14 @@ namespace FinalTask
             {
                 conn.Open();
 
-
-                // Step 1: Read all purchases ONLY for this draw time
-                var purchases = new List<(int pid, int uid, string[] tickets, string[] qtys, DateTime nextDraw)>();
+                // Step 1: Read all matching purchases for this draw into memory
+                var purchases = new List<(int pid, int uid, string[] tickets, string[] qtys)>();
 
                 DateTime slotStart = drawDateTime;
-                DateTime slotEnd = drawDateTime.AddSeconds(59); // precision within 1 minute
+                DateTime slotEnd = drawDateTime.AddSeconds(59);
 
-                using (SqlCommand selectCmd = new SqlCommand(@"
-                        SELECT PurchaseID, UserID, TicketResult, Quantity, NextDraw 
-                        FROM TicketPurchases 
-                        WHERE NextDraw BETWEEN @slotStart AND @slotEnd
-                        AND (WinningResult IS NULL OR WinningResult = '')", conn))
+                using (SqlCommand selectCmd = new SqlCommand(@"SELECT PurchaseID, UserID, TicketResult, Quantity FROM TicketPurchases 
+                                                                WHERE NextDraw BETWEEN @slotStart AND @slotEnd", conn))
                 {
                     selectCmd.Parameters.AddWithValue("@slotStart", slotStart);
                     selectCmd.Parameters.AddWithValue("@slotEnd", slotEnd);
@@ -1390,19 +1345,14 @@ namespace FinalTask
                             int uid = reader.GetInt32(1);
                             string[] tickets = reader.GetString(2).Split(',');
                             string[] qtys = reader.GetString(3).Split(',');
-                            DateTime nextDraw = reader.GetDateTime(4);
 
-                            // Safety check: skip if draw time mismatches
-                            if (nextDraw != drawDateTime)
-                                continue;
-
-                            purchases.Add((pid, uid, tickets, qtys, nextDraw));
+                            purchases.Add((pid, uid, tickets, qtys));
                         }
                     }
                 }
 
-                // Step 2: Process each valid purchase
-                foreach (var (pid, uid, tickets, qtys, nextDraw) in purchases)
+                // Step 2: Process each purchase
+                foreach (var (pid, uid, tickets, qtys) in purchases)
                 {
                     List<string> winResults = new List<string>();
                     List<string> winQuantities = new List<string>();
@@ -1426,16 +1376,12 @@ namespace FinalTask
 
                             totalWinningQty += qty;
                             totalWinningAmt += winAmt;
-
                         }
                     }
 
-                    // Step 3: Update TicketPurchases if any win
-                    using (SqlCommand updateCmd = new SqlCommand(@"
-                        UPDATE TicketPurchases 
-                        SET WinningResult = @wr, WinningQuantity = @wq, WinningAmount = @wa, 
-                            WinningTotalQuantity = @wtq, WinningTotalAmount = @wta 
-                        WHERE PurchaseID = @pid", conn))
+                    // Step 3: Update TicketPurchases
+                    using (SqlCommand updateCmd = new SqlCommand(@"UPDATE TicketPurchases SET WinningResult = @wr, WinningQuantity = @wq, WinningAmount = @wa, 
+                    WinningTotalQuantity = @wtq, WinningTotalAmount = @wta WHERE PurchaseID = @pid", conn))
                     {
                         updateCmd.Parameters.AddWithValue("@wr", string.Join(",", winResults));
                         updateCmd.Parameters.AddWithValue("@wq", string.Join(",", winQuantities));
@@ -1443,11 +1389,10 @@ namespace FinalTask
                         updateCmd.Parameters.AddWithValue("@wtq", totalWinningQty);
                         updateCmd.Parameters.AddWithValue("@wta", totalWinningAmt);
                         updateCmd.Parameters.AddWithValue("@pid", pid);
-
                         updateCmd.ExecuteNonQuery();
                     }
 
-                    // Step 4: Credit user if they won
+                    // Step 4: Credit winnings to user's balance
                     if (totalWinningAmt > 0)
                     {
                         using (SqlCommand creditCmd = new SqlCommand(
@@ -1465,13 +1410,14 @@ namespace FinalTask
                     }
                 }
 
-                // Step 5: Show popup for current user if they won
+                // Step 5: Update logged-in user's balance display
                 if (userWinningAmount > 0)
                 {
                     _balance = GetUserBalanceFromDb();
                     balanceLable.Text = _balance.ToString("N2");
-                }
 
+                    MessageBox.Show($"Congratulations! You won ₹{userWinningAmount:N2}!", "You Won!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
 
@@ -1767,55 +1713,5 @@ namespace FinalTask
             RePrintForm rp = new RePrintForm(_userId, _username, _balance);
             rp.Show();
         }
-        private void PrintReceipt(object sender, PrintPageEventArgs e)
-        {
-            Font headerFont = new Font("Consolas", 14, FontStyle.Bold);
-            Font bodyFont = new Font("Consolas", 10);
-            float y = 20;
-            float left = 20;
-            float lineHeight = bodyFont.GetHeight(e.Graphics) + 4;
-
-            e.Graphics.DrawString("Malamal Dally", headerFont, Brushes.Black, left, y);
-            y += lineHeight * 2;
-
-            e.Graphics.DrawString($"DATE : {DateTime.Now:yyyy-MM-dd}", bodyFont, Brushes.Black, left, y); y += lineHeight;
-            e.Graphics.DrawString($"TIME : {DateTime.Now:hh:mm:ss tt}", bodyFont, Brushes.Black, left, y); y += lineHeight;
-            e.Graphics.DrawString($"Draw Time : {_printDrawTime}", bodyFont, Brushes.Black, left, y); y += lineHeight;
-            e.Graphics.DrawString($"UserName : {_printUsername}", bodyFont, Brushes.Black, left, y); y += lineHeight;
-            e.Graphics.DrawString($"UserID : {_printUserId}", bodyFont, Brushes.Black, left, y); y += lineHeight;
-
-            y += lineHeight;
-            e.Graphics.DrawString(new string('-', 40), bodyFont, Brushes.Black, left, y); y += lineHeight;
-
-            // Print ticket entries: 3 per line
-            int count = 0;
-            StringBuilder line = new StringBuilder();
-            foreach (var (number, qty) in _printTickets)
-            {
-                line.Append($"{number}-{qty},");
-                count++;
-
-                if (count % 3 == 0)
-                {
-                    e.Graphics.DrawString(line.ToString(), bodyFont, Brushes.Black, left, y);
-                    y += lineHeight;
-                    line.Clear();
-                }
-            }
-
-            // Print the remaining items
-            if (line.Length > 0)
-            {
-                e.Graphics.DrawString(line.ToString(), bodyFont, Brushes.Black, left, y);
-                y += lineHeight;
-            }
-
-            y += 2;
-            e.Graphics.DrawString(new string('-', 40), bodyFont, Brushes.Black, left, y); y += lineHeight;
-
-            e.Graphics.DrawString($"Quantity :- {_printTotalQty}", bodyFont, Brushes.Black, left, y); y += lineHeight;
-            e.Graphics.DrawString($"Total Amount :- Rs{_printTotalAmt}", bodyFont, Brushes.Black, left, y);
-        }
-
     }
 }
