@@ -17,6 +17,7 @@ namespace FinalTask
         private int _userId;
         private string _username;
         private decimal _balance;
+        private Timer autoRefreshTimer;
         string connectionString = ConfigurationManager.ConnectionStrings["myConstr"].ConnectionString;
         public CancelForm(int id, string username, decimal balance)
         {
@@ -25,9 +26,18 @@ namespace FinalTask
             _username = username;
             _balance = balance;
             createEmptyColumns();
+            autoRefreshTimer = new Timer();
+            autoRefreshTimer.Interval = 15000; // 15 seconds; adjust as needed
+            autoRefreshTimer.Tick += AutoRefreshTimer_Tick;
+            autoRefreshTimer.Start();
             this.Load += CancelForm_Load;
             dataGridView1.CellClick += dataGridView1_CellClick;
         }
+        private void AutoRefreshTimer_Tick(object sender, EventArgs e)
+        {
+            LoadUpcomingTickets();
+        }
+
         private void CancelForm_Load(object sender, EventArgs e)
         {
             LoadUpcomingTickets();
@@ -83,6 +93,13 @@ namespace FinalTask
             cancelBtn.Text = "Cancel";
             cancelBtn.UseColumnTextForButtonValue = true;
             dataGridView1.Columns.Add(cancelBtn);
+
+            DataGridViewTextBoxColumn pid = new DataGridViewTextBoxColumn();
+            pid.Name = "PurchaseID";
+            pid.HeaderText = "PurchaseID";
+            pid.Visible = false;
+            dataGridView1.Columns.Add(pid);
+
         }
         private void LoadUpcomingTickets()
         {
@@ -111,7 +128,8 @@ namespace FinalTask
                         reader["Points"],
                         reader["BarcodeNum"],
                         reader["Lottery_Name"],
-                        "Cancel" // Button label
+                        "Cancel", // Button label
+                        reader["PurchaseID"]
                     );
                 }
             }
@@ -144,49 +162,52 @@ namespace FinalTask
         }
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            // Ensure clicked cell is valid
             if (e.RowIndex < 0 || e.RowIndex >= dataGridView1.Rows.Count)
                 return;
 
             if (dataGridView1.Rows[e.RowIndex].IsNewRow)
                 return;
 
+            // Check if 'Cancel' button column was clicked
             if (dataGridView1.Columns[e.ColumnIndex].Name == "Cancel")
             {
-                var barcodeCell = dataGridView1.Rows[e.RowIndex].Cells["BarcodeNum"].Value;
-                if (barcodeCell == null || barcodeCell == DBNull.Value)
+                var pidCell = dataGridView1.Rows[e.RowIndex].Cells["PurchaseID"].Value;
+                if (pidCell == null || pidCell == DBNull.Value)
                 {
-                    MessageBox.Show("Barcode is missing for this ticket.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Missing PurchaseID. Cannot cancel this ticket.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                string barcode = barcodeCell.ToString();
+                int purchaseId = Convert.ToInt32(pidCell);
 
+                // Confirm cancellation from user
                 var confirm = MessageBox.Show("Are you sure you want to cancel this ticket?", "Confirm Cancel", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (confirm == DialogResult.Yes)
                 {
-                    CancelTicketByBarcode(barcode);
+                    CancelTicketByPurchaseId(purchaseId);
 
-                    // Refresh balance from DB
+                    // Refresh user balance from DB
                     _balance = GetUserBalance(_userId);
 
+                    // Reload ticket data
                     LoadUpcomingTickets();
                 }
             }
         }
-        private void CancelTicketByBarcode(string barcode)
+        private void CancelTicketByPurchaseId(int purchaseId)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
-            using (SqlCommand cmd = new SqlCommand("CancelTicketPurchaseByBarcode", conn))
+            using (SqlCommand cmd = new SqlCommand("CancelTicketByPurchaseId", conn)) // You must define this stored procedure
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@UserID", _userId);
-                cmd.Parameters.AddWithValue("@Barcode", barcode);
+                cmd.Parameters.AddWithValue("@PurchaseID", purchaseId);
 
                 try
                 {
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    //MessageBox.Show("Ticket canceled successfully. Balance refunded.");
                 }
                 catch (Exception ex)
                 {
@@ -194,6 +215,5 @@ namespace FinalTask
                 }
             }
         }
-
     }
 }
