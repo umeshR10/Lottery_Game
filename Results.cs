@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Printing;
 
 namespace FinalTask
 {
@@ -17,6 +18,9 @@ namespace FinalTask
         private int _userId;
         private string _username;
         private decimal _balance;
+        // Fields for printing
+        private PrintDocument printDocument = new PrintDocument();
+        private string printText = "";
         string connectionString = ConfigurationManager.ConnectionStrings["myConstr"].ConnectionString;
         public Results(int id, string username, decimal balance)
         {
@@ -26,11 +30,6 @@ namespace FinalTask
             _balance = balance;
             comboBox1.MaxDropDownItems = 5;
             fetchDrawTime();
-        }
-        private void ResizeDataGridView()
-        {
-            dataGridView1.Height = dataGridView1.Rows.GetRowsHeight(DataGridViewElementStates.Visible)
-                                  + dataGridView1.ColumnHeadersHeight + 2;
         }
         private void fetchDrawTime()
         {
@@ -208,15 +207,78 @@ namespace FinalTask
                 }
             }
         }
-
         private void btnGo_Click(object sender, EventArgs e)
         {
             LoadDrawTimesForSelectedDate();
         }
+        private void PreparePrintText()
+        {
+            StringBuilder sb = new StringBuilder();
 
+            // Add header info: Date and Draw Time
+            string selectedDrawTime = comboBox1.SelectedItem?.ToString() ?? "N/A";
+            string selectedDate = dateTimePicker1.Value.ToShortDateString();
+
+            sb.AppendLine($"Draw Results - {selectedDate} at {selectedDrawTime}");
+            sb.AppendLine(new string('-', 50)); // separator line
+
+            // Grid data
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                for (int j = 0; j < dataGridView1.Columns.Count; j++)
+                {
+                    var value = dataGridView1.Rows[i].Cells[j].Value?.ToString();
+                    sb.Append(string.IsNullOrWhiteSpace(value) ? "   " : $"{value,3}");
+                    sb.Append("  "); // spacing between cells
+                }
+                sb.AppendLine();
+            }
+
+            printText = sb.ToString();
+        }
+        private void printDocument_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            Font headerFont = new Font("Arial", 12, FontStyle.Bold);
+            Font bodyFont = new Font("Courier New", 10);
+            float yPos = e.MarginBounds.Top;
+
+            // Draw header (first line)
+            string selectedDrawTime = comboBox1.SelectedItem?.ToString() ?? "N/A";
+            string selectedDate = dateTimePicker1.Value.ToShortDateString();
+            string header = $"Draw Results - {selectedDate} at {selectedDrawTime}";
+
+            e.Graphics.DrawString(header, headerFont, Brushes.Black, e.MarginBounds.Left, yPos);
+            yPos += headerFont.GetHeight(e.Graphics) + 10; // add space after header
+
+            // Now draw the rest of the content
+            string[] lines = printText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            for (int i = 2; i < lines.Length; i++) // skip first 2 lines (header & separator already printed)
+            {
+                e.Graphics.DrawString(lines[i], bodyFont, Brushes.Black, e.MarginBounds.Left, yPos);
+                yPos += bodyFont.GetHeight(e.Graphics);
+            }
+
+            e.HasMorePages = false;
+        }
         private void btnPrint_Click(object sender, EventArgs e)
         {
+            if (dataGridView1.Rows.Count == 0)
+            {
+                MessageBox.Show("There is nothing to print.");
+                return;
+            }
 
+            PreparePrintText();
+
+            PrintDialog printDialog = new PrintDialog();
+            printDialog.Document = printDocument;
+
+            printDocument.PrintPage += new PrintPageEventHandler(printDocument_PrintPage);
+
+            if (printDialog.ShowDialog() == DialogResult.OK)
+            {
+                printDocument.Print();
+            }
         }
     }
 }
