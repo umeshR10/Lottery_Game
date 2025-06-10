@@ -911,89 +911,87 @@ namespace FinalTask
             if (totalAmtBox != null) totalAmtBox.Text = ((totalQty * 2) * multiplier).ToString("N0");
 
         }
-
+        private bool IsVerticalRangeChecked(int index)
+        {
+            switch (index)
+            {
+                case 0: return checkBox0_99.Checked;
+                case 1: return checkBox100_199.Checked;
+                case 2: return checkBox200_299.Checked;
+                case 3: return checkBox300_399.Checked;
+                case 4: return checkBox400_499.Checked;
+                case 5: return checkBox500_599.Checked;
+                case 6: return checkBox600_699.Checked;
+                case 7: return checkBox700_799.Checked;
+                case 8: return checkBox800_899.Checked;
+                case 9: return checkBox900_999.Checked;
+                default: return false;
+            }
+        }
         // This method is used to handle the text changed event for the text boxes
         private void textBox_TextChanged(object sender, EventArgs e)
         {
             TextBox tb = sender as TextBox;
-            if (tb == null) return;
-
-            if (!tb.Name.StartsWith("textBox")) return;
+            if (tb == null || !tb.Name.StartsWith("textBox")) return;
             if (!int.TryParse(tb.Name.Substring(7), out int index)) return;
 
             int realNumber = labelOffset + currentStart + index;
             string val = tb.Text;
 
-            // Always update current box value
             allValues[realNumber] = val;
-
-            // Auto-check corresponding range if not checked
-            if (!isLabelViewMode)
-            {
-                int rangeStart = (realNumber / 100) * 100;
-                string checkboxName = $"checkBox{rangeStart}_{rangeStart + 99}";
-                var chkBox = this.Controls.Find(checkboxName, true).FirstOrDefault() as CheckBox;
-                if (chkBox != null && !chkBox.Checked)
-                {
-                    chkBox.Checked = true;
-                }
-            }
-
-
-            // Record this number as user-entered (for buy filtering)
             userEnteredNumbers.Add(realNumber);
 
             if (!int.TryParse(val, out int inputQty))
                 inputQty = 0;
 
-            // Spread values only in All mode
-            if (inputQty >= 0)
+            // ✅ FAMILY POINT MODE
+            if (checkBoxFP.Checked && !isLabelViewMode && inputQty > 0)
             {
-                int lastTwoDigits = realNumber % 100;
+                int familyBase = realNumber % 100;
+                if (familyBase >= 0 && familyBase < 100)
+                    FamilyFillingByInput(familyBase, val);
+                return;
+            }
 
-                // Only allow spread if NOT in Label mode
-                if (!isLabelViewMode)
+            // ✅ NORMAL SPREAD MODE
+            int lastTwoDigits = realNumber % 100;
+
+            if (!isLabelViewMode)
+            {
+                for (int i = 0; i < 10; i++)
                 {
-                    for (int i = 0; i < 10; i++)
+                    if (!IsVerticalRangeChecked(i)) continue;
+
+                    int targetNumber = labelOffset + (i * 100) + lastTwoDigits;
+
+                    int relativeIndex = targetNumber - (labelOffset + currentStart);
+                    TextBox targetBox = (relativeIndex >= 0 && relativeIndex < 100)
+                        ? this.Controls.Find("textBox" + relativeIndex, true).FirstOrDefault() as TextBox
+                        : null;
+
+                    if (inputQty > 0)
                     {
-                        bool applySpread = false;
-                        switch (i)
-                        {
-                            case 0: applySpread = checkBox0_99.Checked; break;
-                            case 1: applySpread = checkBox100_199.Checked; break;
-                            case 2: applySpread = checkBox200_299.Checked; break;
-                            case 3: applySpread = checkBox300_399.Checked; break;
-                            case 4: applySpread = checkBox400_499.Checked; break;
-                            case 5: applySpread = checkBox500_599.Checked; break;
-                            case 6: applySpread = checkBox600_699.Checked; break;
-                            case 7: applySpread = checkBox700_799.Checked; break;
-                            case 8: applySpread = checkBox800_899.Checked; break;
-                            case 9: applySpread = checkBox900_999.Checked; break;
-                        }
-
-                        if (!applySpread) continue;
-
-                        int targetNumber = labelOffset + (i * 100) + lastTwoDigits;
-
                         allValues[targetNumber] = val;
+                        userEnteredNumbers.Add(targetNumber);
 
-                        int relativeIndex = targetNumber - (labelOffset + currentStart);
-
-                        if (relativeIndex >= 0 && relativeIndex < 100)
+                        if (targetBox != null && targetBox != tb)
                         {
-                            TextBox targetBox = this.Controls.Find("textBox" + relativeIndex, true).FirstOrDefault() as TextBox;
-                            if (targetBox != null && targetBox != tb)
-                            {
-                                targetBox.TextChanged -= textBox_TextChanged;
-                                targetBox.Text = val;
-                                targetBox.TextChanged += textBox_TextChanged;
-                            }
+                            targetBox.TextChanged -= textBox_TextChanged;
+                            targetBox.Text = val;
+                            targetBox.TextChanged += textBox_TextChanged;
                         }
+                    }
+                    else // inputQty == 0 → clear spread
+                    {
+                        allValues[targetNumber] = "";
+                        userEnteredNumbers.Remove(targetNumber);
 
-                        if (inputQty > 0)
-                            userEnteredNumbers.Add(targetNumber);
-                        else
-                            userEnteredNumbers.Remove(targetNumber);
+                        if (targetBox != null && targetBox != tb)
+                        {
+                            targetBox.TextChanged -= textBox_TextChanged;
+                            targetBox.Text = "";
+                            targetBox.TextChanged += textBox_TextChanged;
+                        }
                     }
                 }
             }
@@ -1817,6 +1815,68 @@ namespace FinalTask
             e.Graphics.DrawString($"Quantity :- {_printTotalQty}", bodyFont, Brushes.Black, left, y); y += lineHeight;
             e.Graphics.DrawString($"Total Amount :- Rs{_printTotalAmt}", bodyFont, Brushes.Black, left, y);
         }
+        private void FamilyFillingByInput(int familyNumber, string qty)
+        {
+            string[] farr = new string[]
+            {
+                "00,50,05,55", "01,10,60,06,56,65,51,15", "02,20,07,57,75,25,52,70", "03,30,80,08,58,85,35,53",
+                "04,40,90,09,59,95,45,54", "05,50,00,55", "06,60,51,56,65,10,01,15", "07,70,57,75,20,02,25,52",
+                "08,80,53,58,85,30,03,35", "09,90,59,95,40,04,45,54", "10,56,65,01,60,06,51,15", "11,16,61,66",
+                "12,67,76,21,17,71,62,26", "13,68,86,31,18,81,36,63", "14,69,96,41,19,91,46,64", "15,60,06,51,65,56,01,10",
+                "16,66,61,11", "17,67,76,21,12,71,62,26", "18,13,31,86,68,63,36,81", "19,14,41,91,46,64,96,69",
+                "20,02,70,07,25,52,75,57", "21,12,67,76,17,71,26,62", "22,72,27,77", "23,78,87,32,73,28,82,37",
+                "24,79,97,42,92,29,47,74", "25,70,07,52,02,20,57,75", "26,71,17,62,21,12,67,76", "27,72,77,22",
+                "28,78,87,82,37,73,32,23", "29,74,47,79,97,92,42,24", "30,85,58,03,35,53,80,08", "31,86,68,13,63,36,18,81",
+                "32,87,78,23,37,73,28,82", "33,88,38,83", "34,89,98,43,48,84,39,93", "35,80,08,53,85,58,30,03",
+                "36,81,18,63,68,86,13,31", "37,82,28,73,78,87,32,23", "38,88,38,83", "39,84,48,89,98,43,34,93",
+                "40,95,59,04,90,09,45,54", "41,96,69,14,91,19,46,64", "42,79,97,24,92,29,47,74", "43,98,89,34,93,39,48,84",
+                "44,99,94,49", "45,90,09,54,95,59,40,04", "46,91,19,64,96,69,41,14", "47,92,29,74,97,79,42,24",
+                "48,93,39,84,98,89,43,34", "49,99,49,94", "50,05,55,00", "51,06,60,15,10,01,65,56", "52,07,70,25,20,02,75,57",
+                "53,08,80,35,30,03,30,58", "54,09,90,45,40,04,95,59", "55,00,05,50", "56,01,10,65,06,60,15,51",
+                "57,02,20,75,70,07,25,52", "58,03,30,85,80,08,35,53", "59,04,40,95,90,09,45,54", "60,15,51,06,65,56,10,01",
+                "61,16,11,66", "62,17,71,26,67,76,21,12", "63,18,81,36,68,86,31,13", "64,19,91,46,69,96,41,14",
+                "65,10,01,56,60,06,51,15", "66,11,61,16", "67,12,21,17,71,26,62,76", "68,13,31,18,81,36,63,86",
+                "69,14,41,19,91,46,64,96", "70,25,52,07,75,57,20,02", "71,26,62,17,76,62,21,12", "72,27,77,22",
+                "73,28,82,37,78,87,23,32", "74,29,92,47,79,97,24,42", "75,20,02,57,70,07,25,52", "76,21,12,62,26,17,71,67",
+                "77,22,72,27", "78,23,32,37,73,28,82,87", "79,24,42,47,74,29,92,97", "80,35,53,08,85,58,30,03",
+                "81,36,63,18,86,68,31,13", "82,37,73,28,87,78,32,23", "83,33,38,88", "84,39,93,48,89,98,34,43",
+                "85,30,03,35,53,80,08,58", "86,31,13,68,63,36,18,81", "87,32,23,78,73,37,28,82", "88,33,83,38",
+                "89,34,43,98,93,39,48,84", "90,45,54,09,95,59,04,40", "91,46,64,19,96,69,14,41", "92,47,74,29,97,79,24,42",
+                "93,98,89,39,48,84,34,43", "94,44,99,49", "95,40,04,59,90,09,45,54", "96,41,14,69,96,19,46,64",
+                "97,42,24,79,92,29,47,74", "98,43,34,89,93,39,48,84", "99,44,94,49"
+            };
+            if (familyNumber < 0 || familyNumber >= farr.Length || string.IsNullOrEmpty(qty)) return;
 
+            string[] members = farr[familyNumber].Split(',');
+
+            for (int vertical = 0; vertical <= 9; vertical++)
+            {
+                if (!IsVerticalRangeChecked(vertical)) continue;
+
+                foreach (string raw in members)
+                {
+                    if (!int.TryParse(raw, out int num)) continue;
+
+                    int fullNumber = labelOffset + (vertical * 100) + num;
+                    allValues[fullNumber] = qty;
+                    userEnteredNumbers.Add(fullNumber);
+
+                    int relIndex = fullNumber - (labelOffset + currentStart);
+                    if (relIndex >= 0 && relIndex < 100)
+                    {
+                        var tb = panelContainer.Controls.Find("textBox" + relIndex, true).FirstOrDefault() as TextBox;
+                        if (tb != null)
+                        {
+                            tb.TextChanged -= textBox_TextChanged;
+                            tb.Text = qty;
+                            tb.TextChanged += textBox_TextChanged;
+                        }
+                    }
+                }
+            }
+
+            UpdateRowSummaries();
+            UpdateTotalSummary();
+        }
     }
 }
