@@ -160,7 +160,7 @@ namespace FinalTask
             bool isToday = dateTimePicker1.Value.Date == DateTime.Today;
             string query;
 
-            if(isToday)
+            if (isToday)
             {
                 query = "select DrawTime from DrawResults where DrawDate = CAST(GETDATE() as DATE) " +
                     "and CAST(DrawDate as DATETIME) + CAST(DrawTime as DATETIME) < DATEADD(MINUTE, - 15, GETDATE())" +

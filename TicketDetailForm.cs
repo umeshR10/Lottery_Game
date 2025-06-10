@@ -10,7 +10,7 @@ namespace FinalTask
         private string _barcode;
         string connectionString = ConfigurationManager.ConnectionStrings["myConstr"].ConnectionString;
 
-        public TicketDetailForm( string barcode)
+        public TicketDetailForm(string barcode)
         {
             InitializeComponent();
             _barcode = barcode;

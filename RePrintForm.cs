@@ -38,7 +38,7 @@ namespace FinalTask
         private void btnHome_Click(object sender, EventArgs e)
         {
             this.Hide();
-            Dashboard db = new Dashboard(_userId,_username,_balance);
+            Dashboard db = new Dashboard(_userId, _username, _balance);
             db.Show();
         }
 
