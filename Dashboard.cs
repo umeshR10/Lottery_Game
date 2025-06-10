@@ -212,11 +212,11 @@ namespace FinalTask
         private Label _lastClickedLabel = null;
         private void HandleLabelClick(int startIndex)
         {
-            isLabelViewMode = true;              // We are in single-label viewing mode
-            isAllModeEnabled = false;            // Turn off All mode if active
-            LoadTextBoxes(startIndex);           // Load only selected range
+            isLabelViewMode = true;
+            isAllModeEnabled = false;
+            SaveCurrentValues(); // Save before load
+            LoadTextBoxes(labelOffset + startIndex);  // Ensure correct offset before saving/loading
 
-            // Optional: Visually highlight selected label
             if (_lastClickedLabel != null)
                 _lastClickedLabel.BackColor = Color.Transparent;
 
@@ -921,7 +921,7 @@ namespace FinalTask
             if (!tb.Name.StartsWith("textBox")) return;
             if (!int.TryParse(tb.Name.Substring(7), out int index)) return;
 
-            int realNumber = labelOffset + index;
+            int realNumber = labelOffset + currentStart + index;
             string val = tb.Text;
 
             // Always update current box value
@@ -977,7 +977,8 @@ namespace FinalTask
 
                         allValues[targetNumber] = val;
 
-                        int relativeIndex = targetNumber - currentStart;
+                        int relativeIndex = targetNumber - (labelOffset + currentStart);
+
                         if (relativeIndex >= 0 && relativeIndex < 100)
                         {
                             TextBox targetBox = this.Controls.Find("textBox" + relativeIndex, true).FirstOrDefault() as TextBox;

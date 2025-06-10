@@ -213,5 +213,10 @@ namespace FinalTask
         {
             LoadDrawTimesForSelectedDate();
         }
+
+        private void btnPrint_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
