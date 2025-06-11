@@ -32,6 +32,9 @@ namespace FinalTask
         private string _printUsername = "";
         private int _printUserId;
         private string _printDrawTime = "";
+        private Dictionary<int, HashSet<int>> cpPatternMap = new Dictionary<int, HashSet<int>>();
+        private int? lastCPSource = null;
+
         public Dashboard(int id, string username, decimal balance)
         {
             InitializeComponent();
@@ -113,6 +116,20 @@ namespace FinalTask
             checkBox80_89.CheckedChanged += LabelMode_CheckedChanged;
             checkBox90_99.CheckedChanged += LabelMode_CheckedChanged;
             AllCheckBox.CheckedChanged += AllCheckBox_CheckedChanged;
+
+            // Add Cross Mode checkbox event
+            checkBoxCP.CheckedChanged += checkBoxCP_CheckedChanged;
+        }
+        // Handle Cross Mode toggle
+        private void checkBoxCP_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxCP.Checked)
+            {
+                // Uncheck other modes to avoid conflicts
+                checkBoxFP.Checked = false;
+                checkBoxEVEN.Checked = false;
+                checkBoxODD.Checked = false;
+            }
         }
 
         private void HandleHorizontalLabelClick(int horizontalIndex)
@@ -317,72 +334,6 @@ namespace FinalTask
             LoginForm loginForm = new LoginForm();
             loginForm.Show();
         }
-        //private void GenerateAndSaveAllDrawsForToday()
-        //{
-        //    DateTime today = DateTime.Today;
-        //    TimeSpan start = TimeSpan.FromHours(8);   // NEW: Start at 08:00 
-        //    TimeSpan end = TimeSpan.FromHours(22);    // End at 10:00 PM
-
-        //    using (SqlConnection conn = new SqlConnection(connectionString))
-        //    {
-        //        conn.Open();
-
-        //        // Check if today's results already exist
-        //        string checkQuery = "SELECT COUNT(*) FROM DrawResults WHERE DrawDate = @date";
-        //        using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
-        //        {
-        //            checkCmd.Parameters.AddWithValue("@date", today);
-        //            int existingCount = (int)checkCmd.ExecuteScalar();
-
-        //            // There should be 56 draws from 08:15 to 22:00 (inclusive)
-        //            if (existingCount >= 56)
-        //                return; // All results already exist
-        //        }
-
-        //        List<(DateTime drawTime, string resultCSV)> allResults = new List<(DateTime, string)>();
-        //        Random rnd = new Random();
-        //        HashSet<string> generatedNumbers = new HashSet<string>();
-
-        //        for (TimeSpan time = start; time <= end; time = time.Add(TimeSpan.FromMinutes(15)))
-        //        {
-        //            List<string> resultsForSlot = new List<string>();
-        //            generatedNumbers.Clear();
-
-        //            for (int i = 0; i < 10; i++)
-        //            {
-        //                int rangeStart = i * 100;
-        //                int rangeEnd = rangeStart + 99;
-        //                string result;
-
-        //                do
-        //                {
-        //                    result = rnd.Next(rangeStart, rangeEnd + 1).ToString("D4");
-        //                } while (generatedNumbers.Contains(result));
-
-        //                resultsForSlot.Add(result);
-        //                generatedNumbers.Add(result);
-        //            }
-
-        //            string resultCSV = string.Join(",", resultsForSlot);
-        //            DateTime drawDateTime = today.Add(time);
-        //            allResults.Add((drawDateTime, resultCSV));
-        //        }
-
-        //        // Insert all generated draw results
-        //        foreach (var (drawTime, resultCSV) in allResults)
-        //        {
-        //            string insertQuery = @"INSERT INTO DrawResults (DrawDate, DrawTime, ResultList)
-        //                           VALUES (@date, @time, @results)";
-        //            using (SqlCommand insertCmd = new SqlCommand(insertQuery, conn))
-        //            {
-        //                insertCmd.Parameters.AddWithValue("@date", drawTime.Date);
-        //                insertCmd.Parameters.AddWithValue("@time", drawTime.TimeOfDay);
-        //                insertCmd.Parameters.AddWithValue("@results", resultCSV);
-        //                insertCmd.ExecuteNonQuery();
-        //            }
-        //        }
-        //    }
-        //}
         private void GenerateAndSaveAllDrawsForToday()
         {
             DateTime today = DateTime.Today;
@@ -795,7 +746,6 @@ namespace FinalTask
                     allValues[labelOffset + currentStart + i] = tb.Text;
             }
         }
-
         // This method is used to load the values from the dictionary into the text boxes
         private void LoadTextBoxes(int newStart)
         {
@@ -827,8 +777,6 @@ namespace FinalTask
             UpdateRowSummaries();
             UpdateTotalSummary();
         }
-
-
         // This method is used to update the row summaries based on the values in the text boxes
         private void UpdateRowSummaries()
         {
@@ -928,6 +876,87 @@ namespace FinalTask
                 default: return false;
             }
         }
+        // This method fills a diagonal cross pattern (X shape) based on the input number
+        private void ApplyXCrossPattern(int inputNumber, string value)
+        {
+            // Clear previous pattern if any
+            if (lastCPSource.HasValue && lastCPSource.Value != inputNumber)
+            {
+                ClearCPPattern(lastCPSource.Value);
+            }
+
+            int base100 = (inputNumber / 100) * 100;
+            int offset = inputNumber % 100;
+            int centerRow = offset / 10;
+            int centerCol = offset % 10;
+
+            for (int r = 0; r < 10; r++)
+            {
+                for (int c = 0; c < 10; c++)
+                {
+                    if ((r - c == centerRow - centerCol) || (r + c == centerRow + centerCol))
+                    {
+                        int num = base100 + r * 10 + c;
+                        ApplyToTextBox(num, value);
+                    }
+                }
+            }
+
+            // Store current source
+            if (!string.IsNullOrEmpty(value))
+                lastCPSource = inputNumber;
+            else if (lastCPSource == inputNumber)
+                lastCPSource = null;
+        }
+        private void ClearCPPattern(int inputNumber)
+        {
+            int base100 = (inputNumber / 100) * 100;
+            int offset = inputNumber % 100;
+            int centerRow = offset / 10;
+            int centerCol = offset % 10;
+
+            for (int r = 0; r < 10; r++)
+            {
+                for (int c = 0; c < 10; c++)
+                {
+                    if ((r - c == centerRow - centerCol) || (r + c == centerRow + centerCol))
+                    {
+                        int num = base100 + r * 10 + c;
+                        ApplyToTextBox(num, "");
+                    }
+                }
+            }
+        }
+
+        // This method applies the value to a specific textbox and updates the backing dictionary
+        private void ApplyToTextBox(int number, string value)
+        {
+            // Always update the backing dictionary
+            if (allValues.ContainsKey(number))
+                allValues[number] = value;
+            else
+                allValues.Add(number, value);
+
+            // Track whether this was manually entered
+            if (!string.IsNullOrWhiteSpace(value))
+                userEnteredNumbers.Add(number);
+            else
+                userEnteredNumbers.Remove(number);
+
+            // Only update the visible textbox if it's on screen
+            int relativeIndex = number - (labelOffset + currentStart);
+            if (relativeIndex >= 0 && relativeIndex < 100)
+            {
+                TextBox tb = panelContainer.Controls.Find($"textBox{relativeIndex}", true).FirstOrDefault() as TextBox;
+                if (tb != null)
+                {
+                    tb.TextChanged -= textBox_TextChanged;
+                    tb.Text = value;
+                    tb.TextChanged += textBox_TextChanged;
+                }
+            }
+        }
+
         // This method is used to handle the text changed event for the text boxes
         private void textBox_TextChanged(object sender, EventArgs e)
         {
@@ -950,6 +979,15 @@ namespace FinalTask
                 int familyBase = realNumber % 100;
                 if (familyBase >= 0 && familyBase < 100)
                     FamilyFillingByInput(familyBase, val);
+                return;
+            }
+
+            // ✅ CROSS MODE
+            if (checkBoxCP.Checked && tb.Focused)
+            {
+                ApplyXCrossPattern(realNumber, val);
+                UpdateRowSummaries();
+                UpdateTotalSummary();
                 return;
             }
 
@@ -1668,7 +1706,6 @@ namespace FinalTask
             else if (checkBox800_899.Checked) LoadTextBoxes(800);
             else if (checkBox900_999.Checked) LoadTextBoxes(900);
         }
-
         private void resultButton_Click(object sender, EventArgs e)
         {
             this.Hide();
