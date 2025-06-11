@@ -743,7 +743,14 @@ namespace FinalTask
             {
                 TextBox tb = panelContainer.Controls.Find($"textBox{i}", true).FirstOrDefault() as TextBox;
                 if (tb != null)
-                    allValues[labelOffset + currentStart + i] = tb.Text;
+                {
+                    int realNumber = labelOffset + currentStart + i;
+                    allValues[realNumber] = tb.Text;
+                    if (!string.IsNullOrWhiteSpace(tb.Text))
+                        userEnteredNumbers.Add(realNumber);
+                    else
+                        userEnteredNumbers.Remove(realNumber);
+                }
             }
         }
         // This method is used to load the values from the dictionary into the text boxes
@@ -769,11 +776,25 @@ namespace FinalTask
                     else
                         textbox.Text = "";
 
+                    // Set read-only for F0–F9 and B0–B9 in Cross Mode
+                    if (checkBoxCP.Checked)
+                    {
+                        int row = i / 10;
+                        int col = i % 10;
+                        if (row == 0 || col == 0) // Assuming F0–F9 are row 0, B0–B9 are col 0
+                            textbox.ReadOnly = true;
+                        else
+                            textbox.ReadOnly = false;
+                    }
+                    else
+                    {
+                        textbox.ReadOnly = false;
+                    }
+
                     textbox.TextChanged += textBox_TextChanged;
                 }
             }
 
-            // Recalculate summaries AFTER loading values
             UpdateRowSummaries();
             UpdateTotalSummary();
         }
@@ -885,19 +906,41 @@ namespace FinalTask
                 ClearCPPattern(lastCPSource.Value);
             }
 
-            int base100 = (inputNumber / 100) * 100;
+            // Calculate the position within the 100-number block
             int offset = inputNumber % 100;
             int centerRow = offset / 10;
             int centerCol = offset % 10;
 
-            for (int r = 0; r < 10; r++)
+            // Determine which ranges to apply the pattern to
+            List<int> ranges = new List<int>();
+            if (checkBoxAll.Checked)
             {
-                for (int c = 0; c < 10; c++)
+                // Add all ranges that are checked
+                for (int i = 0; i < 10; i++)
                 {
-                    if ((r - c == centerRow - centerCol) || (r + c == centerRow + centerCol))
+                    if (IsVerticalRangeChecked(i))
+                        ranges.Add(i * 100);
+                }
+            }
+            else
+            {
+                // Apply only to the current range
+                int base100 = (inputNumber / 100) * 100;
+                ranges.Add(base100);
+            }
+
+            // Apply the "x" pattern to each range
+            foreach (int base100 in ranges)
+            {
+                for (int r = 0; r < 10; r++)
+                {
+                    for (int c = 0; c < 10; c++)
                     {
-                        int num = base100 + r * 10 + c;
-                        ApplyToTextBox(num, value);
+                        if ((r - c == centerRow - centerCol) || (r + c == centerRow + centerCol))
+                        {
+                            int num = base100 + r * 10 + c;
+                            ApplyToTextBox(num, value);
+                        }
                     }
                 }
             }
@@ -910,24 +953,42 @@ namespace FinalTask
         }
         private void ClearCPPattern(int inputNumber)
         {
-            int base100 = (inputNumber / 100) * 100;
             int offset = inputNumber % 100;
             int centerRow = offset / 10;
             int centerCol = offset % 10;
 
-            for (int r = 0; r < 10; r++)
+            // Determine which ranges to clear
+            List<int> ranges = new List<int>();
+            if (checkBoxAll.Checked)
             {
-                for (int c = 0; c < 10; c++)
+                for (int i = 0; i < 10; i++)
                 {
-                    if ((r - c == centerRow - centerCol) || (r + c == centerRow + centerCol))
+                    if (IsVerticalRangeChecked(i))
+                        ranges.Add(i * 100);
+                }
+            }
+            else
+            {
+                int base100 = (inputNumber / 100) * 100;
+                ranges.Add(base100);
+            }
+
+            // Clear the "x" pattern in each range
+            foreach (int base100 in ranges)
+            {
+                for (int r = 0; r < 10; r++)
+                {
+                    for (int c = 0; c < 10; c++)
                     {
-                        int num = base100 + r * 10 + c;
-                        ApplyToTextBox(num, "");
+                        if ((r - c == centerRow - centerCol) || (r + c == centerRow + centerCol))
+                        {
+                            int num = base100 + r * 10 + c;
+                            ApplyToTextBox(num, "");
+                        }
                     }
                 }
             }
         }
-
         // This method applies the value to a specific textbox and updates the backing dictionary
         private void ApplyToTextBox(int number, string value)
         {
@@ -1692,9 +1753,11 @@ namespace FinalTask
 
             if (checkBoxAll.Checked)
             {
-                LoadTextBoxes(0); return;
+                LoadTextBoxes(0); // Default to 0–99 when All is checked
+                return;
             }
 
+            // Load the first checked range
             if (checkBox0_99.Checked) LoadTextBoxes(0);
             else if (checkBox100_199.Checked) LoadTextBoxes(100);
             else if (checkBox200_299.Checked) LoadTextBoxes(200);
@@ -1705,6 +1768,12 @@ namespace FinalTask
             else if (checkBox700_799.Checked) LoadTextBoxes(700);
             else if (checkBox800_899.Checked) LoadTextBoxes(800);
             else if (checkBox900_999.Checked) LoadTextBoxes(900);
+            else
+            {
+                // If no range is checked, default to 0–99
+                checkBox0_99.Checked = true;
+                LoadTextBoxes(0);
+            }
         }
         private void resultButton_Click(object sender, EventArgs e)
         {
