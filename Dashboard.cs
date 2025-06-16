@@ -284,8 +284,6 @@ namespace FinalTask
             // Trigger result declaration when countdown reaches 00:00:00
             if (_lastProcessedDrawTime != currentSlot && remaining.TotalSeconds <= 1)
             {
-                Console.WriteLine($"[DEBUG] Processing draw for slot: {currentSlot:HH:mm}");
-
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
