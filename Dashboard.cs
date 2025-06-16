@@ -306,7 +306,6 @@ namespace FinalTask
                             EvaluateWinners(targetNextDraw, drawnNumbers);
                             LoadLatestResults(); // Refresh UI
 
-                            Console.WriteLine($"[INFO] Results processed for {currentSlot:HH:mm}");
                         }
                         else
                         {
